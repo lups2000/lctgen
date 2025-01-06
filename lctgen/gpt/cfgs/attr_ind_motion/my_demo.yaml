@@ -1,0 +1,11 @@
+EXPERIMENT_NAME: 'my_demo'
+
+LLM:
+  CODEX:
+    MODEL_NAME: 'meta-llama/Llama-3.1-8B-Instruct'
+    BEST_OF: 1
+    MAX_TOKENS: 2048
+    PROMPT_FILE: 'attr_ind_motion/my_demo.prompt'
+    SYS_PROMPT_FILE: 'attr_ind_motion/sys_my_demo.prompt'
+    TEMPERATURE: 0.1
+  TYPE: 'huggingface'
