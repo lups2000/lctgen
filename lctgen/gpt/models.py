@@ -38,9 +38,12 @@ class CodexModel(BasicLLM):
         return extended_prompt
 
     def llm_query(self, extended_prompt):
-        inputs = self.tokenizer(
-            extended_prompt, return_tensors="pt"
-        ).to("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.model = self.model.to(device)
+
+        inputs = self.tokenizer(extended_prompt, return_tensors="pt").to(device)
+
         outputs = self.model.generate(
             inputs.input_ids,
             max_length=self.codex_cfg.MAX_TOKENS,
@@ -48,8 +51,10 @@ class CodexModel(BasicLLM):
             top_p=1.0,
             repetition_penalty=1.1,
         )
+        
         response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return response
+
 
     def post_process(self, response):
         return response
