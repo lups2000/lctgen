@@ -61,7 +61,7 @@ class CodexModel(BasicLLM):
             top_p=1.,
         )
         
-        response = outputs[0]["generated_text"][-1]["content"]
+        response = outputs[0]["generated_text"]
         return response
 
     def post_process(self, response):
