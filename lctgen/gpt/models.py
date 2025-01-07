@@ -52,7 +52,7 @@ class CodexModel(BasicLLM):
 
         self.model = self.model.to(device)
         
-        full_prompt = f"System: {self.sys_prompt}\nUser: {extended_prompt}"
+        full_prompt = f"System: {self.sys_prompt}\nUser: {extended_prompt}. You should answer with just the output that the user required. Don't include the system instruction for you in the response!"
         
         outputs = self.pipe(
             full_prompt,
