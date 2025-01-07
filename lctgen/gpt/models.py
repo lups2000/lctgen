@@ -32,6 +32,16 @@ class CodexModel(BasicLLM):
             self.codex_cfg.MODEL_NAME,
             use_auth_token=True
         )
+        self.pipe = transformers.pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            pad_token_id=self.tokenizer.eos_token_id,
+        )
+        self.terminators = [
+            self.pipe.tokenizer.eos_token_id,
+            self.pipe.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+        ]
 
     def prepare_prompt(self, query, base_prompt):
         extended_prompt = base_prompt.replace("INSERT_QUERY_HERE", query)
@@ -41,22 +51,21 @@ class CodexModel(BasicLLM):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.model = self.model.to(device)
-
-        inputs = self.tokenizer(
-            extended_prompt,
-            return_tensors="pt",
-        ).to(device)
         
-        outputs = self.model.generate(
-            inputs.input_ids,
+        full_prompt = f"{self.sys_prompt}\n{extended_prompt}"
+        
+        outputs = self.pipe(
+            full_prompt,
+            max_tokens=self.codex_cfg.MAX_TOKENS,
+            eos_token_id=self.terminators,
             temperature=self.codex_cfg.TEMPERATURE,
-            top_p=1.0,
-            repetition_penalty=1.1,
+            top_p=1.,
+            frequency_penalty=0,
+            presence_penalty=0,
         )
         
-        response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        response = outputs[0]["generated_text"]
         return response
-
 
     def post_process(self, response):
         return response
