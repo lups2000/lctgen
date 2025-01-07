@@ -52,7 +52,7 @@ class CodexModel(BasicLLM):
 
         self.model = self.model.to(device)
         
-        full_prompt = f"{self.sys_prompt}\n\nNow this is the query to process and you should output the result: {extended_prompt}"
+        full_prompt = f"{self.sys_prompt}\n\nNow this is the query to process and you should output only the result. This means that you should completely avoid to output your prompt but i want only the output of the query according to the previous instructions. : {extended_prompt}"
         
         outputs = self.pipe(
             full_prompt,
@@ -61,17 +61,8 @@ class CodexModel(BasicLLM):
             top_p=1.,
         )
         
-        response = outputs[0]["generated_text"]
-        # Split or clean the response to isolate the desired output section
-        start = response.find("Summary:")
-        end = response.find("Map Vector:") + len("Map Vector:")
-        
-        if start != -1 and end != -1:
-            clean_output = response[start:end].strip()
-        else:
-            clean_output = response.strip()
-        
-        return clean_output
+        response = outputs[0]["generated_text"][-1]["content"]
+        return response
 
     def post_process(self, response):
         return response
