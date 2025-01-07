@@ -52,13 +52,10 @@ class CodexModel(BasicLLM):
 
         self.model = self.model.to(device)
         
-        messages=[
-                  {"role": "system", "content": self.sys_prompt},
-                  {"role": "user", "content": extended_prompt}
-        ],
+        full_prompt = f"{self.sys_prompt}\n\nNow this is the query to process and you should output the result: {extended_prompt}"
         
         outputs = self.pipe(
-            messages,
+            full_prompt,
             eos_token_id=self.terminators,
             temperature=self.codex_cfg.TEMPERATURE,
             top_p=1.,
