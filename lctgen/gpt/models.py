@@ -52,10 +52,13 @@ class CodexModel(BasicLLM):
 
         self.model = self.model.to(device)
         
-        full_prompt = f"System: {self.sys_prompt}\nUser: {extended_prompt}. You should answer with just the output that the user required. Don't include the system instruction for you in the response!"
+        messages=[
+                  {"role": "system", "content": self.sys_prompt},
+                  {"role": "user", "content": extended_prompt}
+        ],
         
         outputs = self.pipe(
-            full_prompt,
+            messages,
             eos_token_id=self.terminators,
             temperature=self.codex_cfg.TEMPERATURE,
             top_p=1.,
