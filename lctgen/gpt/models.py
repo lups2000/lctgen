@@ -32,6 +32,7 @@ class CodexModel(BasicLLM):
             self.codex_cfg.MODEL_NAME,
             use_auth_token=True
         )
+        self.tokenizer.pad_token = self.tokenizer.eos_token
 
     def prepare_prompt(self, query, base_prompt):
         extended_prompt = base_prompt.replace("INSERT_QUERY_HERE", query)
@@ -42,14 +43,25 @@ class CodexModel(BasicLLM):
 
         self.model = self.model.to(device)
 
-        inputs = self.tokenizer(extended_prompt, return_tensors="pt").to(device)
+        inputs = self.tokenizer(
+            extended_prompt,
+            return_tensors="pt",
+            padding=True,  # Ensures the input is padded if necessary
+            truncation=True,  # Truncates if input exceeds the model's max length
+        ).to(device)
+        
+        pad_token_id = self.tokenizer.eos_token_id
+        if pad_token_id is None:
+            raise ValueError("The tokenizer does not have an eos_token_id. Please set pad_token_id manually.")
 
         outputs = self.model.generate(
             inputs.input_ids,
+            attention_mask=inputs.attention_mask,  # Pass attention mask here
             max_length=self.codex_cfg.MAX_TOKENS,
             temperature=self.codex_cfg.TEMPERATURE,
             top_p=1.0,
             repetition_penalty=1.1,
+            pad_token_id=pad_token_id,
         )
         
         response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -58,16 +70,6 @@ class CodexModel(BasicLLM):
 
     def post_process(self, response):
         return response
-
-@registry.register_llm(name='null')
-class NullCodex(CodexModel):
-    def __init__(self, config):
-        super().__init__(config)
-
-    def llm_query(self, extended_prompt):
-        # for debugging
-        return extended_prompt
-
   
 @registry.register_llm(name='null')
 class NullCodex(CodexModel):
