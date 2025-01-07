@@ -62,7 +62,16 @@ class CodexModel(BasicLLM):
         )
         
         response = outputs[0]["generated_text"]
-        return response
+        # Split or clean the response to isolate the desired output section
+        start = response.find("Summary:")
+        end = response.find("Map Vector:") + len("Map Vector:")
+        
+        if start != -1 and end != -1:
+            clean_output = response[start:end].strip()
+        else:
+            clean_output = response.strip()
+        
+        return clean_output
 
     def post_process(self, response):
         return response
