@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 import torch
 import os
 
@@ -32,7 +32,7 @@ class CodexModel(BasicLLM):
             self.codex_cfg.MODEL_NAME,
             use_auth_token=True
         )
-        self.pipe = transformers.pipeline(
+        self.pipe = pipeline(
             "text-generation",
             model=self.model,
             tokenizer=self.tokenizer,
