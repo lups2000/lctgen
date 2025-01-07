@@ -56,12 +56,9 @@ class CodexModel(BasicLLM):
         
         outputs = self.pipe(
             full_prompt,
-            max_tokens=self.codex_cfg.MAX_TOKENS,
             eos_token_id=self.terminators,
             temperature=self.codex_cfg.TEMPERATURE,
             top_p=1.,
-            frequency_penalty=0,
-            presence_penalty=0,
         )
         
         response = outputs[0]["generated_text"]
