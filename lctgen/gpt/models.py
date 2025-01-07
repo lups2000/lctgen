@@ -57,7 +57,6 @@ class CodexModel(BasicLLM):
         outputs = self.model.generate(
             inputs.input_ids,
             attention_mask=inputs.attention_mask,  # Pass attention mask here
-            max_length=self.codex_cfg.MAX_TOKENS,
             temperature=self.codex_cfg.TEMPERATURE,
             top_p=1.0,
             repetition_penalty=1.1,
