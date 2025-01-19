@@ -57,7 +57,11 @@ class CodexModel(BasicLLM):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(device)
         
-        full_prompt = self.sys_prompt
+        full_prompt = f"""
+            {self.sys_prompt}
+            \n\n
+            {extended_prompt}
+        """
         
         outputs = self.pipe(
             full_prompt,

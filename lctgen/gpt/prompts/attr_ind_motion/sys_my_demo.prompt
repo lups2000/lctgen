@@ -56,7 +56,3 @@ Generate the Map Vector following the rules below:
 - If there is no intersection, the distance to the intersection should be -1.
 - There should be vehicle driving vertical to the ego vehicle in the scene only when there is an intersection in the scene. For example, when the road is just two-way, there should not be any vehicle driving vertical to the ego vehicle.
 - If no intersection is mentioned, generate intersection scenario randomly with real-world statistics.
-
-Query: 'The scene in an intersection which is chill and safe'
-
-Output:
