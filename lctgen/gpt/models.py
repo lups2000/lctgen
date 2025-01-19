@@ -50,20 +50,14 @@ class CodexModel(BasicLLM):
 
     def prepare_prompt(self, query, base_prompt):
         # Replace the placeholder in base prompt with actual query
-        extended_prompt = base_prompt.replace("INSERT_QUERY_HERE", query)
+        extended_prompt = base_prompt.replace("INSERT_QUERY_HERE", f"'{query}'")
         return extended_prompt
 
     def llm_query(self, extended_prompt):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(device)
         
-        # Format the complete prompt using Llama 2's chat template
-        full_prompt = f"""<s>[INST] <<SYS>>
-            {self.sys_prompt}
-            <</SYS>>
-
-            {extended_prompt} [/INST]
-        """
+        full_prompt = self.sys_prompt
         
         outputs = self.pipe(
             full_prompt,
@@ -73,8 +67,6 @@ class CodexModel(BasicLLM):
         )
         
         response = outputs[0]["generated_text"]
-        # Extract only the generated response part
-        response = response.split("[/INST]")[-1].strip()
         return response
 
     def post_process(self, response):
