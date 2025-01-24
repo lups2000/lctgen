@@ -2,7 +2,7 @@ EXPERIMENT_NAME: 'my_demo'
 
 LLM:
   CODEX:
-    MODEL_NAME: 'meta-llama/Llama-3.3-70B-Instruct'
+    MODEL_NAME: 'meta-llama/Llama-3.1-8B-Instruct'
     PROMPT_FILE: 'attr_ind_motion/my_demo.prompt'
     SYS_PROMPT_FILE: 'attr_ind_motion/sys_my_demo.prompt'
     TEMPERATURE: 0.1
